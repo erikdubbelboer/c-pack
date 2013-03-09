@@ -11,18 +11,19 @@
 int main(int argc, char* argv[]) {
   if (argc < 2) {
     // Reading.
-    char buffer[32];
+    char buffer[10];
     int  n = 0;
 
-    while (!feof(stdin)) {
+    while (!feof(stdin) && (n < 10)) {
       n += fread(&buffer[n], 1, 1, stdin);
     }
 
     printf("%d bytes read\n", n);
 
-    // Unpack the data we just received.
+    // Create an unpacker for the data we just read.
     PACKED(p, buffer, n);
 
+    // Unpack the number.
     int32_t num = unpack_int32_t(&p);
 
     if (p.error) {
@@ -34,9 +35,10 @@ int main(int argc, char* argv[]) {
     // Writing.
     int32_t num = (argc < 2) ? 42 : atoi(argv[1]);
 
-    // Pack the number.
-    PACKER(p, 32);
+    // Create a buffer of 10 bytes.
+    PACKER(p, 10);
 
+    // Pack the number.
     pack_int32_t(&p, num);
     pack_finish(&p);
 
