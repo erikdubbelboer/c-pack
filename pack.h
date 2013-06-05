@@ -5,6 +5,12 @@
 
 #include <stdint.h>  // uint64_t
 #include <string.h>  // memcpy()
+#include <stdlib.h>  // malloc()
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 
 #define PACK_FIELDS \
@@ -22,26 +28,40 @@ typedef struct packed_s {
 // Define a structure used to pack data.
 // The union is only there to force the struct to have the
 // same layout as packed_t.
-#define PACKER(name, size)                                \
-  struct _ ## name ## _s {                                \
-    PACK_FIELDS                                           \
-    char     data[size];                                  \
-  } name;                                                 \
-  union _ ## name ## _align {                             \
-    packed_t a;                                           \
-    struct _ ## name ## _s b;                             \
-  };                                                      \
-  if (size < 4) {                                         \
-    name._s     = 0;                                      \
-    name.length = 0;                                      \
-    name.error  = 1;                                      \
-  } else {                                                \
-    name.length = sizeof(name.length);                    \
-    memcpy(name.data, &name.length, sizeof(name.length)); \
-    name._s     = size;                                   \
-    name._p     = name.data + sizeof(name.length);        \
-    name.error  = 0;                                      \
-  }
+#define PACKER(name, size)                              \
+  struct _ ## name ## _s {                              \
+    PACK_FIELDS                                         \
+    char data[4 + size];                                \
+  } name;                                               \
+  union _ ## name ## _align {                           \
+    packed_t a;                                         \
+    struct _ ## name ## _s b;                           \
+  };                                                    \
+  name.length = sizeof(name.length);                    \
+  memcpy(name.data, &name.length, sizeof(name.length)); \
+  name._s     = 4 + size;                               \
+  name._p     = name.data + sizeof(name.length);        \
+  name.error  = 0;
+
+
+#define PACKER_NEW(name, size)                             \
+  struct _ ## name ## _s {                                 \
+    PACK_FIELDS                                            \
+    char data[4 + size];                                   \
+  };                                                       \
+  struct _ ## name ## _s* name =                           \
+    (struct _ ## name ## _s*)malloc(                       \
+      sizeof(struct _ ## name ## _s)                       \
+    );                                                     \
+  union _ ## name ## _align {                              \
+    packed_t a;                                            \
+    struct _ ## name ## _s b;                              \
+  };                                                       \
+  name->length = sizeof(name->length);                     \
+  memcpy(name->data, &name->length, sizeof(name->length)); \
+  name->_s     = 4 + size;                                 \
+  name->_p     = name->data + sizeof(name->length);        \
+  name->error  = 0;
 
 
 // Define a structure to unpack data.
@@ -97,6 +117,17 @@ void* unpack_buffer(packed_t* p, uint32_t* length);
 void pack_finish(void* pa);
 
 
+// Reset unpacking.
+void unpack_reset(void* pa);
+
+
+// Return the data pointer of a packed_t struct.
+static inline char* pack_data(void* pa) {
+  packed_t* p = (packed_t*)pa;
+  return (char*)p + sizeof(packed_t);
+}
+
+
 #if 0
 
 // This macro can be used to pack data based on the automatic type of it's argument.
@@ -116,6 +147,11 @@ void pack_finish(void* pa);
     __builtin_choose_expr(__builtin_types_compatible_p(__typeof__(d), const char*), pack_string(p, (const char*)d), (void)0); \
   } while (0);
 
+#endif
+
+
+#ifdef __cplusplus
+}
 #endif
 
 

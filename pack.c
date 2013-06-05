@@ -116,3 +116,11 @@ void pack_finish(void* pa) {
   memcpy(p->_p - p->length, &length, sizeof(length));
 }
 
+
+void unpack_reset(void* pa) {
+  packed_t* p = (packed_t*)pa;
+
+  p->_p -= p->_s;
+  p->_s  = 0;
+}
+

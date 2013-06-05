@@ -86,27 +86,40 @@ void test_buffer() {
 void test_overflow() {
   PACKER(p1, 2);
 
+  pack_int64_t(&p1, 1l);
+
   if (p1.error == 0) {
-    printf("expected error with too small buffer\n");
+    printf("expected error when writing to too small buffer\n");
   }
 
 
-  PACKER(p2, 6);
+  PACKER(p2, 3);
 
-  pack_int64_t(&p2, 1l);
+  pack_string(&p2, "abcd");
 
   if (p2.error == 0) {
     printf("expected error when writing to too small buffer\n");
   }
+}
 
 
-  PACKER(p3, 6);
+void test_new() {
+  PACKER_NEW(p, 8);
 
-  pack_string(&p3, "abcd");
+  pack_int64_t(p, 1234);
+  pack_finish(p);
 
-  if (p3.error == 0) {
-    printf("expected error when writing to too small buffer\n");
+  if (p->error) {
+    printf("error packing with new\n");
   }
+
+  PACKED(up, pack_data(p), p->length);
+
+  if (up.error) {
+    printf("error in new pack\n");
+  }
+
+  free(p);
 }
 
 
@@ -265,6 +278,7 @@ int main() {
   test_string();
   test_buffer();
   test_overflow();
+  test_new();
 
 
   srand(0);

@@ -16,5 +16,5 @@ clean:
 
 
 # always perform the actions to build test and clean
-.PHONY: test clean
+.PHONY: test example clean
 
