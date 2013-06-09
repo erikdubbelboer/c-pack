@@ -51,7 +51,7 @@ typedef struct packed_s {
   };                                                       \
   struct _ ## name ## _s* name =                           \
     (struct _ ## name ## _s*)malloc(                       \
-      sizeof(struct _ ## name ## _s)                       \
+      sizeof(*name)                                        \
     );                                                     \
   union _ ## name ## _align {                              \
     packed_t a;                                            \
@@ -80,6 +80,23 @@ typedef struct packed_s {
     if (name.length > len) {              \
       name.length = len;                  \
       ++name.error;                       \
+    }                                     \
+  }
+
+
+#define PACKED_NEW(name, data, len)       \
+  packed_t* name = malloc(sizeof(*name)); \
+  name->_s     = 0;                       \
+  name->_p     = data;                    \
+  name->length = len;                     \
+  if (len < 4) {                          \
+    name->error = 1;                      \
+  } else {                                \
+    name->error  = 0;                     \
+    name->length = unpack_uint32_t(name); \
+    if (name->length > len) {             \
+      name->length = len;                 \
+      ++name->error;                      \
     }                                     \
   }
 

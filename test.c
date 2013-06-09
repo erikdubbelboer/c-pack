@@ -113,13 +113,14 @@ void test_new() {
     printf("error packing with new\n");
   }
 
-  PACKED(up, pack_data(p), p->length);
+  PACKED_NEW(up, pack_data(p), p->length);
 
-  if (up.error) {
+  if (up->error) {
     printf("error in new pack\n");
   }
 
   free(p);
+  free(up);
 }
 
 
