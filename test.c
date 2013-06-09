@@ -1,8 +1,8 @@
 
-#include <stdio.h>   // printf()
-#include <stdlib.h>  // rand()
-#include <string.h>  // memcpy()
-#include <endian.h>  // htob..()
+#include <stdio.h>   /* printf() */
+#include <stdlib.h>  /* rand()   */
+#include <string.h>  /* memcpy() */
+#include <endian.h>  /* htob..() */
 
 #include "pack.h"
 

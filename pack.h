@@ -1,11 +1,11 @@
 
-#ifndef SRC_PACK_H_
-#define SRC_PACK_H_
+#ifndef _PACK_H_
+#define _PACK_H_
 
 
-#include <stdint.h>  // uint64_t
-#include <string.h>  // memcpy()
-#include <stdlib.h>  // malloc()
+#include <stdint.h>  /* uint64_t */
+#include <string.h>  /* memcpy() */
+#include <stdlib.h>  /* malloc() */
 
 
 #ifdef __cplusplus
@@ -25,9 +25,11 @@ typedef struct packed_s {
 } packed_t;
 
 
-// Define a structure used to pack data.
-// The union is only there to force the struct to have the
-// same layout as packed_t.
+/**
+ * Define a structure used to pack data.
+ * The union is only there to force the struct to have the
+ * same layout as packed_t.
+ */
 #define PACKER(name, size)                              \
   struct _ ## name ## _s {                              \
     PACK_FIELDS                                         \
@@ -64,9 +66,11 @@ typedef struct packed_s {
   name->error  = 0;
 
 
-// Define a structure to unpack data.
-// Also check if the length matches what was
-// packed into the data.
+/**
+ * Define a structure to unpack data.
+ * Also check if the length matches what was
+ * packed into the data.
+ */
 #define PACKED(name, data, len)           \
   packed_t name;                          \
   name._s     = 0;                        \
@@ -121,36 +125,45 @@ uint64_t unpack_uint64_t(packed_t* p);
 
 void pack_string(void* pa, const char* s);
 
-// This function returns a pointer inside the data (not a copy).
+/** This function returns a pointer inside the data (not a copy). */
 char* unpack_string(packed_t* p);
 
 void pack_buffer(void* pa, const void* buffer, uint32_t length);
 
-// This function returns a pointer inside the data (not a copy).
+/** This function returns a pointer inside the data (not a copy). */
 void* unpack_buffer(packed_t* p, uint32_t* length);
 
 
-// Finish packing. This function should always be called before using the packed data.
+/** Finish packing. This function should always be called before using the packed data. */
 void pack_finish(void* pa);
 
 
-// Reset unpacking.
+/** Reset unpacking. */
 void unpack_reset(void* pa);
 
 
-// Return the data pointer of a packed_t struct.
+/** Return the data pointer of a packed_t struct. */
 static inline char* pack_data(void* pa) {
   packed_t* p = (packed_t*)pa;
   return (char*)p + sizeof(packed_t);
 }
 
 
+/** Return a pointer to the data the unpacker is reading from. */
+static inline char* unpack_data(void* pa) {
+  packed_t* p = (packed_t*)pa;
+
+  return p->_p - p->_s;
+}
+
+
 #if 0
 
-// This macro can be used to pack data based on the automatic type of it's argument.
-// It is not adviced to use this function seeing as you need to know the
-// explicit type when unpacking.
-
+/**
+ * This macro can be used to pack data based on the automatic type of it's argument.
+ * It is not adviced to use this function seeing as you need to know the
+ * explicit type when unpacking.
+ */
 #define pack(p, d)                                                                                                            \
   do {                                                                                                                        \
     __builtin_choose_expr(__builtin_types_compatible_p(__typeof__(d), int8_t  ), pack_int8_t  (p, d), (void)0);               \
@@ -172,5 +185,5 @@ static inline char* pack_data(void* pa) {
 #endif
 
 
-#endif // SRC_PACK_H
+#endif  /* _PACK_H_ */
 

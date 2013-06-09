@@ -1,12 +1,12 @@
 
-#include <stdio.h>   // printf()
-#include <stdlib.h>  // rand()
-#include <endian.h>  // htob..()
+#include <stdio.h>   /* printf() */
+#include <stdlib.h>  /* rand()   */
+#include <endian.h>  /* htob..() */
 
 #include "pack.h"
 
 
-// Macro to define integer pack and unpack functions.
+/* Macro to define integer pack and unpack functions. */
 #define PACK(type, conv)                    \
 void pack_##type(void* pa, type i) {        \
   packed_t* p = (packed_t*)pa;              \
@@ -58,7 +58,7 @@ void pack_string(void* pa, const char* s) {
   } else {
     memcpy(p->_p, s, length);
     p->_p[length] = 0;
-    ++length;  // Count the 0 byte.
+    ++length;  /* Count the 0 byte. */
     p->_p     += length;
     p->length += length;
   }
@@ -67,7 +67,7 @@ void pack_string(void* pa, const char* s) {
 char* unpack_string(packed_t* p) {
   size_t length = strlen(p->_p);
   char*  s      = p->_p;
-  ++length;  // Skip the 0 byte.
+  ++length;  /* Skip the 0 byte. */
   p->_s += length;
   p->_p += length;
   return s;
@@ -108,7 +108,7 @@ void* unpack_buffer(packed_t* p, uint32_t* length) {
 }
 
 
-// Write the length to the start of the data.
+/* Write the length to the start of the data. */
 void pack_finish(void* pa) {
   packed_t* p      = (packed_t*)pa;
   uint32_t  length = htobe32(p->length);
@@ -120,7 +120,8 @@ void pack_finish(void* pa) {
 void unpack_reset(void* pa) {
   packed_t* p = (packed_t*)pa;
 
-  p->_p -= p->_s;
-  p->_s  = 0;
+  /* Reset back to after the size we read. */
+  p->_p -= (p->_s - 4);
+  p->_s  = 4;
 }
 
