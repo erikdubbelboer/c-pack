@@ -34,7 +34,7 @@ int main(int argc, char* argv[]) {
     }
   } else {
     /* Writing. */
-    int32_t num = (argc < 2) ? 42 : atoi(argv[1]);
+    int32_t num = atoi(argv[1]);
 
     /* Create a buffer of 10 bytes. */
     PACKER(p, 10);
