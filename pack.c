@@ -36,14 +36,14 @@ type unpack_##type(packed_t* p) {           \
 static inline int8_t int8_t_nop (int8_t  i) { return i; }
 static inline int8_t uint8_t_nop(uint8_t i) { return i; }
 
-PACK(int8_t  , int8_t_nop , int8_t_nop)
-PACK(uint8_t , uint8_t_nop, int8_t_nop)
-PACK(int16_t , htobe16    , be16toh   )
-PACK(uint16_t, htobe16    , be16toh   )
-PACK(int32_t , htobe32    , be32toh   )
-PACK(uint32_t, htobe32    , be32toh   )
-PACK(int64_t , htobe64    , be64toh   )
-PACK(uint64_t, htobe64    , be64toh   )
+PACK(int8_t  , int8_t_nop , int8_t_nop )
+PACK(uint8_t , uint8_t_nop, uint8_t_nop)
+PACK(int16_t , htobe16    , be16toh    )
+PACK(uint16_t, htobe16    , be16toh    )
+PACK(int32_t , htobe32    , be32toh    )
+PACK(uint32_t, htobe32    , be32toh    )
+PACK(int64_t , htobe64    , be64toh    )
+PACK(uint64_t, htobe64    , be64toh    )
 
 #undef PACK
 
