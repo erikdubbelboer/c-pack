@@ -7,10 +7,10 @@
 
 
 /* Macro to define integer pack and unpack functions. */
-#define PACK(type, conv)                    \
+#define PACK(type, htobe, betoh)            \
 void pack_##type(void* pa, type i) {        \
   packed_t* p = (packed_t*)pa;              \
-  i = conv(i);                              \
+  i = htobe(i);                             \
   if ((p->length + sizeof(type)) > p->_s) { \
     ++p->error;                             \
   } else {                                  \
@@ -29,21 +29,21 @@ type unpack_##type(packed_t* p) {           \
     p->_s += sizeof(type);                  \
     p->_p += sizeof(type);                  \
   }                                         \
-  return conv(d);                           \
+  return betoh(d);                          \
 }
 
 
 static inline int8_t int8_t_nop (int8_t  i) { return i; }
 static inline int8_t uint8_t_nop(uint8_t i) { return i; }
 
-PACK(int8_t  , int8_t_nop )
-PACK(uint8_t , uint8_t_nop)
-PACK(int16_t , htobe16)
-PACK(uint16_t, htobe16)
-PACK(int32_t , htobe32)
-PACK(uint32_t, htobe32)
-PACK(int64_t , htobe64)
-PACK(uint64_t, htobe64)
+PACK(int8_t  , int8_t_nop , int8_t_nop)
+PACK(uint8_t , uint8_t_nop, int8_t_nop)
+PACK(int16_t , htobe16    , be16toh   )
+PACK(uint16_t, htobe16    , be16toh   )
+PACK(int32_t , htobe32    , be32toh   )
+PACK(uint32_t, htobe32    , be32toh   )
+PACK(int64_t , htobe64    , be64toh   )
+PACK(uint64_t, htobe64    , be64toh   )
 
 #undef PACK
 
